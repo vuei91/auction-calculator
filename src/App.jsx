@@ -16,9 +16,11 @@ function App() {
   const [loanRate, setLoanRate] = useState(4.5)
   const [loanInterest, setLoanInterest] = useState('')
   const [managementFee, setManagementFee] = useState('')
+  const [guaranteeInsurance, setGuaranteeInsurance] = useState('')
   const [publicPrice, setPublicPrice] = useState('')
   const [houseCount, setHouseCount] = useState('1')
   const [propertyTax, setPropertyTax] = useState('')
+  const [comprehensiveRealEstateTax, setComprehensiveRealEstateTax] = useState('')
   const [houseType, setHouseType] = useState('individual')
   const [capitalGainsTax, setCapitalGainsTax] = useState('')
   const [brokerageFee, setBrokerageFee] = useState('')
@@ -133,7 +135,59 @@ function App() {
     alert(`대출이자가 자동 계산되었습니다.\n\n낙찰금액: ${formatNumber(bidPriceValue)}원\n대출비율: ${loanRatioValue}%\n대출금액: ${formatNumber(loanAmount)}원\n연이율: ${loanRateValue}%\n보유기간: ${holdingPeriodValue}개월\n\n총 이자: ${formatNumber(interest)}원`)
   }
 
+  const calculateGuaranteeInsurance = () => {
+    const publicPriceValue = getNumericValue(publicPrice)
+    
+    if (publicPriceValue === 0) {
+      alert('공시가격을 먼저 입력해주세요.')
+      return
+    }
+
+    const insurance = Math.round(publicPriceValue * 1.26)
+    setGuaranteeInsurance(insurance)
+
+    alert(`보증보험료가 자동 계산되었습니다.\n\n공시가격: ${formatNumber(publicPriceValue)}원\n계산식: 공시가격 × 1.26\n\n보증보험료: ${formatNumber(insurance)}원`)
+  }
+
   const calculatePropertyTax = () => {
+    const publicPriceValue = getNumericValue(publicPrice)
+    
+    if (publicPriceValue === 0) {
+      alert('공시가격을 먼저 입력해주세요.')
+      return
+    }
+
+    // 재산세 과세표준 = 공시가격 × 60%
+    const taxBase = Math.round(publicPriceValue * 0.6)
+    
+    let tax = 0
+    let taxRate = 0
+
+    // 주택 재산세 누진세율 적용
+    if (taxBase <= 60000000) {
+      tax = taxBase * 0.001
+      taxRate = 0.1
+    } else if (taxBase <= 150000000) {
+      tax = 60000 + (taxBase - 60000000) * 0.0015
+      taxRate = 0.15
+    } else if (taxBase <= 300000000) {
+      tax = 195000 + (taxBase - 150000000) * 0.0025
+      taxRate = 0.25
+    } else {
+      tax = 570000 + (taxBase - 300000000) * 0.004
+      taxRate = 0.4
+    }
+
+    // 지방교육세 (재산세의 20%)
+    const educationTax = Math.round(tax * 0.2)
+    const totalTax = Math.round(tax + educationTax)
+
+    setPropertyTax(totalTax)
+
+    alert(`재산세가 자동 계산되었습니다.\n\n공시가격: ${formatNumber(publicPriceValue)}원\n과세표준(60%): ${formatNumber(taxBase)}원\n최고세율: ${taxRate}%\n\n재산세: ${formatNumber(Math.round(tax))}원\n지방교육세(20%): ${formatNumber(educationTax)}원\n총 재산세: ${formatNumber(totalTax)}원\n\n※ 재산세는 연 2회(7월, 9월) 분할 납부됩니다.`)
+  }
+
+  const calculateComprehensiveRealEstateTax = () => {
     const publicPriceValue = getNumericValue(publicPrice)
     
     if (publicPriceValue === 0) {
@@ -154,7 +208,7 @@ function App() {
 
     if (taxBase === 0) {
       alert('공시가격이 공제금액 이하로 종부세가 발생하지 않습니다.')
-      setPropertyTax(0)
+      setComprehensiveRealEstateTax(0)
       return
     }
 
@@ -204,7 +258,7 @@ function App() {
     }
 
     const propertyTaxValue = Math.round(tax)
-    setPropertyTax(propertyTaxValue)
+    setComprehensiveRealEstateTax(propertyTaxValue)
 
     alert(`종합부동산세가 자동 계산되었습니다.\n\n공시가격: ${formatNumber(publicPriceValue)}원\n주택 수: ${houseCount}주택\n공제금액: ${formatNumber(deduction)}원\n과세표준: ${formatNumber(taxBase)}원\n최고세율: ${taxRate}%\n\n종부세: ${formatNumber(propertyTaxValue)}원\n\n※ 실제 세액은 공정시장가액비율, 세부담 상한 등에 따라 달라질 수 있습니다.`)
   }
@@ -378,8 +432,9 @@ function App() {
       getNumericValue(legalFee) + getNumericValue(unpaidFee) +
       getNumericValue(interiorCost) + getNumericValue(movingCost) + 
       getNumericValue(loanInterest) + getNumericValue(managementFee) +
-      getNumericValue(propertyTax) + getNumericValue(capitalGainsTax) + 
-      getNumericValue(brokerageFee)
+      getNumericValue(guaranteeInsurance) +
+      getNumericValue(propertyTax) + getNumericValue(comprehensiveRealEstateTax) + 
+      getNumericValue(capitalGainsTax) + getNumericValue(brokerageFee)
 
     const bidPriceValue = getNumericValue(bidPrice)
     const salePriceValue = getNumericValue(salePrice)
@@ -566,7 +621,7 @@ function App() {
       </div>
 
       <div className="section">
-        <h2>종부세 계산 정보</h2>
+        <h2>공시가격 정보</h2>
         <div className="input-group">
           <label>공시가격 (원)</label>
           <input
@@ -576,7 +631,23 @@ function App() {
             min="0"
             placeholder="0"
           />
-          <small className="help-text">종부세 계산에 사용됩니다 (보통 시세의 70% 수준)</small>
+          <small className="help-text">보증보험료 및 종부세 계산에 사용됩니다 (보통 시세의 70% 수준)</small>
+        </div>
+        <div className="input-group">
+          <label>
+            보증보험료 (원)
+            <button type="button" className="auto-calc-btn" onClick={calculateGuaranteeInsurance}>
+              자동계산
+            </button>
+          </label>
+          <input
+            type="number"
+            value={guaranteeInsurance || ''}
+            onChange={(e) => handleNumberInput(e.target.value, setGuaranteeInsurance)}
+            min="0"
+            placeholder="0"
+          />
+          <small className="help-text">공시가격 × 1.26으로 자동 계산됩니다</small>
         </div>
         <div className="input-group">
           <label>주택 수</label>
@@ -585,11 +656,11 @@ function App() {
             <option value="2">2주택</option>
             <option value="3">3주택 이상</option>
           </select>
-          <small className="help-text">종부세 계산에 사용됩니다</small>
+          <small className="help-text">재산세 및 종부세 계산에 사용됩니다</small>
         </div>
         <div className="input-group">
           <label>
-            종합부동산세 (원)
+            재산세 (원)
             <button type="button" className="auto-calc-btn" onClick={calculatePropertyTax}>
               자동계산
             </button>
@@ -601,7 +672,23 @@ function App() {
             min="0"
             placeholder="0"
           />
-          <small className="help-text">공시가격 기준으로 자동 계산됩니다</small>
+          <small className="help-text">공시가격 기준으로 자동 계산됩니다 (모든 주택 대상)</small>
+        </div>
+        <div className="input-group">
+          <label>
+            종합부동산세 (원)
+            <button type="button" className="auto-calc-btn" onClick={calculateComprehensiveRealEstateTax}>
+              자동계산
+            </button>
+          </label>
+          <input
+            type="number"
+            value={comprehensiveRealEstateTax || ''}
+            onChange={(e) => handleNumberInput(e.target.value, setComprehensiveRealEstateTax)}
+            min="0"
+            placeholder="0"
+          />
+          <small className="help-text">고가 주택에만 부과 (1주택 12억, 2주택 9억, 3주택 6억 초과)</small>
         </div>
       </div>
 
