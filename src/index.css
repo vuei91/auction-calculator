@@ -1,0 +1,167 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.section h2 {
+  color: #667eea;
+  font-size: 20px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: 500;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.input-group select {
+  background-color: white;
+}
+
+.help-text {
+  display: block;
+  margin-top: 5px;
+  color: #888;
+  font-size: 12px;
+}
+
+.auto-calc-btn {
+  margin-left: 10px;
+  padding: 5px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.auto-calc-btn:hover {
+  background: #5568d3;
+}
+
+.calculate-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.calculate-btn:hover {
+  transform: translateY(-2px);
+}
+
+.calculate-btn:active {
+  transform: translateY(0);
+}
+
+.result {
+  margin-top: 30px;
+  padding: 25px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 3px solid #667eea;
+}
+
+.result h2 {
+  color: #667eea;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: 8px;
+}
+
+.result-item.highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.amount {
+  font-weight: bold;
+  color: #333;
+}
+
+.result-item.highlight .amount {
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+}
